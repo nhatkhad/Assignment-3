@@ -2,63 +2,45 @@ import sys
 from bs4 import BeautifulSoup
 
 def read(file):
-    fileList = []
-    delimiters = set("_- \t\n.,*!?;:()[]/{}\"")
-    
-    with open(file, 'r') as f:
-        for line in f:
-            # start is the start of the word, for splicing later
-            start = None
-            line2 = line.casefold()
-            #go line by line, andthen check characters in the line
-            for i, ch in enumerate(line2):
-                if ch not in delimiters and ch.isalnum() and ch.isascii():
-                    if start is None:
-                        # begins the start of the word
-                        start = i
-                else:
-                    if start is not None:
-                        # splice from start to the before the current character, that is now the word
-                        fileList.append(line2[start:i])
-                        start = None
-            #adds the last word
-            if start is not None:
-                fileList.append(line2[start:])
-    return fileList
+    with open(file) as f:
+        html = f.read
+    soup = BeautifulSoup(html, "lxml")
+    text = soup.get_text(" ")
+    return text
 
-def tokenize(path):
-        fileList = []
-        delimiters = set("_- \t\n.,*!?;:()[]/{}\"")
-        
-        with open(path, 'r') as f:
-            for line in f:
-                # start is the start of the word, for splicing later
+def tokenize(text):
+    fileList = []
+    delimiters = set("_- \t\n.,*!?;:()[]/{}\"'")
+
+    start = None
+    text = text.casefold()
+
+    for i, ch in enumerate(text):
+        if ch not in delimiters and ch.isalnum() and ch.isascii():
+            if start is None:
+                start = i
+        else:
+            if start is not None:
+                fileList.append(text[start:i])
                 start = None
-                line2 = line.casefold()
-                #go line by line, andthen check characters in the line
-                for i, ch in enumerate(line2):
-                    if ch not in delimiters and ch.isalnum() and ch.isascii():
-                        if start is None:
-                            # begins the start of the word
-                            start = i
-                    else:
-                        if start is not None:
-                            # splice from start to the before the current character, that is now the word
-                            fileList.append(line2[start:i])
-                            start = None
-                #adds the last word
-                if start is not None:
-                    fileList.append(line2[start:])
-        return fileList
-    return tokens
+
+    if start is not None:
+        fileList.append(text[start:])
+
+    return fileList
+    
 
 def updateIndex(tokens):
 
     return
 
 def inverseIndex(folder):
+    index = {}
+    fId = 0
+
     for files in folder:
-        text = read(file)
+        fId += 1
+        text = read(files)
         tokens = tokenize(text)
-        updateIndex(tokens)
+        updateIndex(index, tokens, fId)
     return index
