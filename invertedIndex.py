@@ -70,7 +70,7 @@ def create_txt(index, output_file):
             postings = []
             for doc_id, frequency in index[word]:
                 postings.append(
-                    f"(Document {doc_id}, Frequency {frequency})"
+                    f"(dID{doc_id}, tf{frequency})"
                 )
 
             f.write(", ".join(postings))
